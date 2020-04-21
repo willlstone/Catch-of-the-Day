@@ -17,11 +17,22 @@ class App extends React.Component {
     componentDidMount() {
         // sync with the name of this specific store
         const { params } = this.props.match;
+        // first reinstate our local storage
+        const localStorageRef = localStorage.getItem(params.storeId);
+        if(localStorageRef) {
+            // the opposite of JSON.stringify is JSON.parse -- turn it back into an object
+            this.setState({order: JSON.parse(localStorageRef)});
+        }
         // reference to the db
         this.ref = base.syncState(`${params.storeId}/fishes`, {
             context: this,
             state: 'fishes'
         });
+    };
+
+    componentDidUpdate() {
+        //  set local storage // store order for that specific store
+        localStorage.setItem(this.props.match.params.storeId,JSON.stringify(this.state.order)); // JSON.stringify to convert object to string
     };
 
     componentWillUnmount() {
